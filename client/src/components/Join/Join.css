@@ -1,0 +1,29 @@
+html, body {
+  font-family: 'Roboto', sans-serif;
+  padding: 0;
+  margin: 0;
+  background-color: #aae261;
+}
+
+#root {
+  height: 100vh;
+}
+
+.LoginBox {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.InnerContainer {
+  width: 35%;
+  background-color: #acacac;
+  padding: 15px 20px;
+}
+
+.heading {
+  color: white;
+  font-size: 2.5em;
+  padding-bottom: 10px;
+  border-bottom: 2px solid rgb(194, 30, 30);
+}

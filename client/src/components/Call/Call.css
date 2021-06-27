@@ -1,0 +1,43 @@
+
+.messageContainer {
+  display: flex;
+  justify-content: center;
+  align-items: right;
+  height: 100vh;
+  background-color: #1A1A1D;
+  width: 100%;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: #FFFFFF;
+  border-radius: 8px;
+  height: 100%;
+  width: 35%;
+}
+
+.videos__group {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  background-color: var(--main-dark);
+}
+
+video {
+  height: 300px;
+  border-radius: 1rem;
+  margin: 0.5rem;
+  width: 400px;
+  object-fit: cover;
+  transform: rotateY(180deg);
+}
+
+#video-grid {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
