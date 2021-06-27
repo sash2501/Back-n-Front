@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
-import Peer from 'peer';
+//import Peer from 'peer';
+import Peer from "simple-peer";
 import queryString from 'query-string';
+import styled from "styled-components";
 
 
 import InfoBar from '../MessageBar/MessageBar';
 import MessageDisplayer from '../MessageDisplayer/MessageDisplayer';
 import IconList from '../IconList/IconList';
 import Input from '../Input/Input';
-import Video from "../Video/Video";
 //import OnlinePeople from '../OnlinePeople/OnlinePeople';
 
 import './Call.css';
@@ -16,10 +17,40 @@ const io = require("socket.io-client");
 const ENDPOINT = 'http://localhost:5000'
 
 let socket;
-const peer = new Peer(undefined, {
-  host: '/',
-  port: '443'
-})
+
+const Container = styled.div`
+    padding: 20px;
+    display: flex;
+    height: 100vh;
+    width: 90%;
+    margin: auto;
+    flex-wrap: wrap;
+`;
+
+const StyledVideo = styled.video`
+    height: 40%;
+    width: 50%;
+`;
+
+const Video = (props) => {
+    const ref = useRef();
+
+    useEffect(() => {
+        props.peer.on("stream", stream => {
+            ref.current.srcObject = stream;
+        })
+    }, []);
+
+    return (
+        <StyledVideo playsInline autoPlay ref={ref} />
+    );
+}
+
+
+const videoConstraints = {
+    height: window.innerHeight / 2,
+    width: window.innerWidth / 2
+};
   
 const Call = ( {location}) => {
 
@@ -27,14 +58,13 @@ const Call = ( {location}) => {
   const [roomname, setRoomName] = useState(''); //initialize as empty string
   const [message, setMessage] = useState(''); //store message
   const [messageList, setMessageList] = useState([]); //store all messages
-  //const [userList, setUserList] = useState('');
-  //const [displayStream, setDisplayStream] = useState(false);
-  const [streaming, setStreaming] = useState(false);
-  const [mystream, setMyStream] = useState(null)
+  const [mystream, setMyStream] = useState(null)  
+  //----------------------------------------------------
+  const [peers, setPeers] = useState([]);
+  const socketRef = useRef();
+  const userVideo = useRef();
+  const peersRef = useRef([]);
   
-  const videoGrid = document.getElementById("video-grid");
-  const myVideo = document.createElement("video");  
-
   useEffect( () => {
     const { name, room } = queryString.parse(location.search);
 
@@ -42,80 +72,23 @@ const Call = ( {location}) => {
 
     setUserName(name);
     setRoomName(room);
-
-    navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-      .then((currentStream) => {
-        setMyStream(currentStream);
-
-        addVideoStream(myVideo, currentStream);
-
-        peer.on("call", (call) => {
-              call.answer(currentStream);
-              const video = document.createElement("video");
-              call.on("stream", (userVideoStream) => {
-                addVideoStream(video, userVideoStream);
-              });
-            });
-
-        socket.on("user-connected", (name) => {
-              connectToNewUser(name, currentStream);
-            });
-    
-      });
+   
       
-    peer.on("open", () => {
-      //start connection
-    socket.emit('join', { name, room }, () => { //ES6 syntax
-      // if(error) {
-      //   alert(error);
-      // }
-
+    socket.emit('join', { name, room }, () => { 
       return () => {
         //disconnect useEffect hook -  unmounting of component
         socket.emit('disconnect');
 
         socket.off() //remove the one client instance
       }
-    });    
-    })
-
-    
+    });
   }, [ENDPOINT, location.search]);
-
-  // useEffect(() => {
-  //   navigator.mediaDevices.getUserMedia({ video: true, audio: true })
-  //     .then((currentStream) => {
-  //       setMyStream(currentStream);
-
-  //       addVideoStream(video, currentStream);
-  //     });
-  //     peer.on("call", (call) => {
-  //             call.answer(stream);
-  //             const video = document.createElement("video");
-  //             call.on("stream", (userVideoStream) => {
-  //               addVideoStream(video, userVideoStream);
-  //             });
-  //           });
-
-  //   socket.on("user-connected", (name) => {
-  //             connectToNewUser(name, stream);
-  //           });
-
-    
-  // }, []);
-
-
-
+  
   ///handling messages recieved - store the messages
   useEffect(() => {
     socket.on('message', (message)=>{
       setMessageList([...messageList, message]);
     });
-
-    // socket.on('roomData', (users)=>{
-    //   setUserList(users);
-    // });
-    
 
   },[]);
 
@@ -127,24 +100,6 @@ const Call = ( {location}) => {
       socket.emit('sendMessage', message, () => setMessage(''));
     }
   }
-
-  const connectToNewUser = (name, stream) => {
-    const call = peer.call(name, stream);
-    const video = document.createElement("video");
-    call.on("stream", (userVideoStream) => {
-      addVideoStream(video, userVideoStream);
-    });
-  };
-
-  const addVideoStream = (video, stream) => {
-  video.srcObject = stream;
-  video.addEventListener("loadedmetadata", () => {
-    video.play();
-    videoGrid.append(video);
-    });
-  };
-
-
 
   console.log(message, messageList);
 
@@ -162,7 +117,6 @@ const Call = ( {location}) => {
       
         <Input message={message} setMessage={setMessage} sendMessage={sendMessage}/>
       </div>
-      {/* <OnlinePeople users = {userList}/> */}
     </div>
   )
 }
