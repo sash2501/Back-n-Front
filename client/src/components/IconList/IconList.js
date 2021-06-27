@@ -18,7 +18,7 @@ const endCall: IIconProps = { iconName: 'DeclineCall' };
 const volume0Icon: IIconProps = { iconName: 'MicOff' };
 const volume3Icon: IIconProps = { iconName: 'Microphone' };
 
-const InfoBar = ({ room }) => {
+const InfoBar = ({ room, leaveCall, video }) => {
 
   const [muted, { toggle: setMuted }] = useBoolean(false);
   const [isOpen, { setTrue: openMessage, setFalse: dismissMessage }] = useBoolean(false);
