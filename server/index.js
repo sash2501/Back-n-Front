@@ -44,28 +44,30 @@ io.on("connect", (socket) => {
   })
 
   socket.on("sending signal", payload => {
-        console.log("sending signal ",payload.userToSignal)
-        io.to(payload.userToSignal).emit('user joined', { signal: payload.signal, callerID: payload.callerID });
+        //console.log("sending signal ",payload.userToSignal)
+        socket.broadcast.to(payload.userToSignal).emit('user joined', { signal: payload.signal, callerID: payload.callerID });
+        //io.to(payload.userToSignal).emit('user joined', { signal: payload.signal, callerID: payload.callerID });
     });
 
     socket.on("returning signal", payload => {
-        console.log("in returning signal ",payload.callerID )
+        //console.log("in returning signal ",payload.callerID )
         io.to(payload.callerID).emit('receiving returned signal', { signal: payload.signal, id: socket.id });
     });
 
   socket.on('disconnect' ,()=> {
     const user = removeUser(socket.id);
-
-    if(user) {
-      io.to(user.room).emit('message',{user: 'Jarvis', text: `${user.name} has left :(`})
-      
-      // io.to(user.room).emit('user-disconnected', user.name) 
-
-      // io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room)})
     
-    }
-    console.log("User left!!!");
-  })
+      if(user) {
+        io.to(user.room).emit('message',{user: 'Jarvis', text: `${user.name} has left :(`})
+        
+        //io.to(user.room).emit('user-left', socket.id); 
+        socket.broadcast.to(user.room).emit('user left', socket.id);
+
+        // io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room)})
+      
+      }
+      console.log("User left!!!");
+    })
 });
 
 
