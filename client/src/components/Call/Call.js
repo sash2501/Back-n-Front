@@ -215,7 +215,6 @@ const Call = ( {location}) => {
                 );
             })}
         </Container>  
-        <DefaultButton text="Mic" onClick={toggleCamera} />  
       </Stack>
       <div className="messageContainer">
         <div className="container">
