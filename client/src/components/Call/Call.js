@@ -4,18 +4,21 @@ import Peer from "simple-peer";
 import queryString from 'query-string';
 import styled from "styled-components";
 import { Stack, IStackTokens} from '@fluentui/react/lib/Stack';
+import { DefaultButton } from '@fluentui/react/lib/Button';
 
 
-import InfoBar from '../MessageBar/MessageBar';
-import MessageDisplayer from '../MessageDisplayer/MessageDisplayer';
+import InfoBar from '../Chat/MessageBar/MessageBar';
+import MessageDisplayer from '../Chat/MessageDisplayer/MessageDisplayer';
 import IconList from '../IconList/IconList';
-import Input from '../Input/Input';
+import Input from '../Chat/Input/Input';
+import Video from '../Video/Video'
+
 //import OnlinePeople from '../OnlinePeople/OnlinePeople';
 
 import './Call.css';
 // client-side
 const io = require("socket.io-client");
-const ENDPOINT = 'http://localhost:5000'
+const ENDPOINT = 'http://localhost:5001'
 const stackTokens: IStackTokens = { childrenGap: 20 };
 
 let socket;
@@ -27,35 +30,13 @@ const Container = styled.div`
     width: 90%;
     margin: auto;
     flex-wrap: wrap;
-    justifyContent: 'center'
+    justifyContent: center
 `;
 
 const StyledVideo = styled.video`
     height: 40%;
     width: 50%;
 `;
-
-const Video = (props) => {
-    const ref = useRef();
-
-    useEffect(() => {
-        props.peer.on("stream", stream => {
-            console.log("streaming video");
-            ref.current.srcObject = stream;
-        })
-        props.peer.on('close', () => {
-            //ref.current.remove();
-            console.log("closing peer in video element");
-        })
-    }, []);
-
-    return (
-        console.log("displaying video"),
-        <video playsInline autoPlay ref={ref} />
-    );
-}
-
-
 // const videoConstraints = {
 //     height: window.innerHeight / 2,
 //     width: window.innerWidth / 2
@@ -71,6 +52,7 @@ const Call = ( {location}) => {
   //----------------------------------------------------
   const [peersList, setPeersList] = useState([]); //ui reflection of state
   const userVideo = useRef();
+  const mediaRef = useRef();
   const peersRef = useRef([]); //related to ui and visuals
   const [callEnded, setCallEnded] = useState(false);
   let creatingID;
@@ -87,6 +69,8 @@ const Call = ( {location}) => {
     //socket = io.connect("/");
     navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(stream => {
         userVideo.current.srcObject = stream;
+        setMyStream(stream);
+        mediaRef.current = stream;
         socket.emit("join room", {name, room}, error => {if(error) alert(error)});
 
         
@@ -220,17 +204,18 @@ const Call = ( {location}) => {
 
   return (
     <div>
-      <Stack horizontal tokens={stackTokens}>
+      <Stack horizontal>
       <Stack vertical>
-        <IconList room={roomname} /> 
+        <IconList room={roomname} media={mystream} /> 
         <Container>
-            <StyledVideo muted ref={userVideo} autoPlay playsInline />
+            <StyledVideo id="myVideo" muted ref={userVideo} autoPlay playsInline />
             {peerList_duplicateLess.map((peer, id) => {
                 return (
                     <Video key={peer.peerID} peer={peer.peer} />
                 );
             })}
-        </Container>    
+        </Container>  
+        <DefaultButton text="Mic" onClick={toggleCamera} />  
       </Stack>
       <div className="messageContainer">
         <div className="container">
