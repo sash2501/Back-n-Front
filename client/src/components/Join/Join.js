@@ -34,8 +34,14 @@ const Join = () => {
         <Stack horizontalAlign="center" tokens = {stackTokens}>
           <Separator theme={theme}>Login</Separator>
           
-          <TextField label="User Name" placeholder="Please enter user name here" onChange={event => setUserName(event.target.value)}/>
-          <TextField label="Room Name" placeholder="Please enter room name here" onChange={event => setRoomName(event.target.value)}/>
+          <TextField 
+            label="User Name" 
+            placeholder="Please enter user name here" 
+            onChange={event => setUserName(event.target.value)}/>
+          <TextField 
+            label="Room Name" 
+            placeholder="Please enter room name here" 
+            onChange={event => setRoomName(event.target.value)}/>
           <Stack.Item align="center" >
             <Link to={`/call?name=${username}&room=${roomname}`}>
               <DefaultButton 

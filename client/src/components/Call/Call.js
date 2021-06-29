@@ -52,9 +52,9 @@ const Call = ( {location}) => {
   //----------------------------------------------------
   const [peersList, setPeersList] = useState([]); //ui reflection of state
   const userVideo = useRef();
-  const mediaRef = useRef();
   const peersRef = useRef([]); //related to ui and visuals
   const [callEnded, setCallEnded] = useState(false);
+  const myPeer = useRef();
   let creatingID;
   
   useEffect( () => {
@@ -70,7 +70,6 @@ const Call = ( {location}) => {
     navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(stream => {
         userVideo.current.srcObject = stream;
         setMyStream(stream);
-        mediaRef.current = stream;
         socket.emit("join room", {name, room}, error => {if(error) alert(error)});
 
         
@@ -162,7 +161,7 @@ const Call = ( {location}) => {
         peer.on("signal", signal => {
             socket.emit("sending signal", { userToSignal, callerID, signal })
         })
-
+        myPeer.current = peer;
         return peer;
     }
 
@@ -206,7 +205,7 @@ const Call = ( {location}) => {
     <div>
       <Stack horizontal>
       <Stack vertical>
-        <IconList room={roomname} media={mystream} /> 
+        <IconList room={roomname} media={mystream} peer={myPeer}/> 
         <Container>
             <StyledVideo id="myVideo" muted ref={userVideo} autoPlay playsInline />
             {peerList_duplicateLess.map((peer, id) => {

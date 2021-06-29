@@ -19,8 +19,9 @@ const micOffIcon: IIconProps = { iconName: 'MicOff' };
 const micOnIcon: IIconProps = { iconName: 'Microphone' };
 const camOffIcon: IIconProps = { iconName: 'VideoOff' };
 const camOnIcon: IIconProps = { iconName: 'Video' };
+const screenCast: IIconProps = { iconName: 'ScreenCast' };
 
-const InfoBar = ({ room, media}) => {
+const InfoBar = ({ room, media, peer}) => {
 
   //const [muted, { toggle: setMuted }] = useBoolean(false);
   const [muted, setMuted] = useState(false);
@@ -40,6 +41,20 @@ const InfoBar = ({ room, media}) => {
 
         setMuted(!muted);
     }
+  
+    const shareScreen =() => {
+      navigator.mediaDevices.getDisplayMedia({cursor:true})
+      .then(screenStream=>{
+        console.log("screen sharing");
+        // myPeer.replaceTrack(media.getVideoTracks()[0],screenStream.getVideoTracks()[0],media)
+        // userVideo.current.srcObject=screenStream
+        // screenStream.getTracks()[0].onended = () =>{
+        // myPeer.replaceTrack(screenStream.getVideoTracks()[0],stream.getVideoTracks()[0],media)
+        // userVideo.current.srcObject=media
+        //}
+      })
+    }
+
 
   return(
   <div className="menuBar">
@@ -49,19 +64,24 @@ const InfoBar = ({ room, media}) => {
     <div className="commandBar">
       <Stack horizontal tokens={stackTokens}>
         <DefaultButton
-        toggle
-        checked={muted}
-        text={muted ? 'Mic muted' : 'Mic unmuted'}
-        iconProps={muted ? micOffIcon : micOnIcon}
-        onClick={toggleMicrophone}
+          toggle
+          checked={muted}
+          text={muted ? 'Mic muted' : 'Mic unmuted'}
+          iconProps={muted ? micOffIcon : micOnIcon}
+          onClick={toggleMicrophone}
         />  
         <DefaultButton
-        toggle
-        checked={cameraOff}
-        text={cameraOff ? 'Cam Off' : 'Cam On'}
-        iconProps={cameraOff ? camOffIcon : camOnIcon}
-        onClick={toggleCamera}
+          toggle
+          checked={cameraOff}
+          text={cameraOff ? 'Cam Off' : 'Cam On'}
+          iconProps={cameraOff ? camOffIcon : camOnIcon}
+          onClick={toggleCamera}
         />  
+        <DefaultButton 
+          text="Screen" 
+          onClick={shareScreen} 
+          iconProps={screenCast}
+        />
         <Link to={`/`}>
           <DefaultButton 
           text="End Call" 
@@ -82,14 +102,4 @@ const InfoBar = ({ room, media}) => {
 );
 };
 
-
-// function muteMic(stream) {
-//   stream.getAudioTracks().forEach(track => track.enabled = !track.enabled);
-//   //stream.getAudioTracks()[0].enabled = !(stream.getAudioTracks()[0].enabled);
-// }
-
-// function muteCam(stream) {
-//   stream.getVideoTracks().forEach(track => track.enabled = !track.enabled);
-//   //mediaStream.getVideoTracks()[0].enabled = !(mediaStream.getVideoTracks()[0].enabled); //own
-// }
 export default InfoBar;
