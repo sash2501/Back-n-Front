@@ -29,6 +29,11 @@ io.on("connect", (socket) => {
 
     socket.broadcast.to(user.room).emit('message', {user: 'Jarvis', text: `${user.name} has joined :D`})
 
+    io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room) });
+
+    socket.broadcast.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room) })
+
+
     socket.emit("all users", getUsersInRoom(user.room));
 
     socket.join(user.room); ///name of room to join
@@ -62,8 +67,8 @@ io.on("connect", (socket) => {
         
         //io.to(user.room).emit('user-left', socket.id); 
         socket.broadcast.to(user.room).emit('user left', socket.id);
-
-        // io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room)})
+        
+        io.to(user.room).emit('roomData', { users: getUsersInRoom(user.room)});
       
       }
       console.log("User left!!!");
@@ -71,4 +76,4 @@ io.on("connect", (socket) => {
 });
 
 
-server.listen(process.env.PORT || 5001, () => console.log(`Server has started.`));
+server.listen(process.env.PORT || 5000, () => console.log(`Server has started.`));

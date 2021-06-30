@@ -18,7 +18,7 @@ import Video from '../Video/Video'
 import './Call.css';
 // client-side
 const io = require("socket.io-client");
-const ENDPOINT = 'http://localhost:5001'
+const ENDPOINT = 'http://localhost:5000'
 const stackTokens: IStackTokens = { childrenGap: 20 };
 
 let socket;
@@ -48,6 +48,7 @@ const Call = ( {location}) => {
   const [roomname, setRoomName] = useState(''); //initialize as empty string
   const [message, setMessage] = useState(''); //store message
   const [messageList, setMessageList] = useState([]); //store all messages
+  const [usersInRoom, setUsersInRoom] = useState('');
   const [mystream, setMyStream] = useState(null)  
   //----------------------------------------------------
   const [peersList, setPeersList] = useState([]); //ui reflection of state
@@ -74,6 +75,8 @@ const Call = ( {location}) => {
 
         
         socket.on("all users", users => {
+          console.log("users in room thru socket", users);
+          setUsersInRoom(users);
             const peers = [];
             users.forEach(user => {
                 console.log(user.id);
@@ -147,6 +150,9 @@ const Call = ( {location}) => {
       setMessageList(messageList => [...messageList, message]);
     });
 
+    socket.on("roomData", ({users }) => {
+      setUsersInRoom(users);
+    });
   },[]);
 
   function createPeer(userToSignal, callerID, stream) {
@@ -193,19 +199,26 @@ const Call = ( {location}) => {
     }
   }
 
+  // const getUsersList = (event) => {
+  //   event.preventDefualt();
+
+  //   socket.emit('sendUserList', )
+  // }
+
   console.log(message, messageList);
   const peerList_duplicateLess = peersList.filter((v,i) => {
     return peersList.map((peer)=> peer.peerID).indexOf(v.peerID) == i
   })
 
   console.log("peerslist final",peersList);  
+  console.log("users in room", usersInRoom);
   console.log("result wout duplicate", peerList_duplicateLess);
 
   return (
     <div>
       <Stack horizontal>
       <Stack vertical>
-        <IconList room={roomname} media={mystream} peer={myPeer}/> 
+        <IconList room={roomname} media={mystream} peer={myPeer} users={usersInRoom}/> 
         <Container>
             <StyledVideo id="myVideo" muted ref={userVideo} autoPlay playsInline />
             {peerList_duplicateLess.map((peer, id) => {
@@ -214,6 +227,7 @@ const Call = ( {location}) => {
                 );
             })}
         </Container>  
+        {/* <OnlinePeople users={usersInRoom}/> */}
       </Stack>
       <div className="messageContainer">
         <div className="container">

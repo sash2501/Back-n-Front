@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { IIconProps, initializeIcons } from '@fluentui/react';
 import { Stack, IStackTokens} from '@fluentui/react/lib/Stack';
-import { DefaultButton } from '@fluentui/react/lib/Button';
+import { PrimaryButton, DefaultButton }  from '@fluentui/react/lib/Button';
 import { Link } from "react-router-dom";
 import { Panel } from '@fluentui/react/lib/Panel';
+import { Dialog, DialogType, DialogFooter } from '@fluentui/react/lib/Dialog';
 
 import { useBoolean } from '@fluentui/react-hooks';
 
@@ -11,6 +12,7 @@ import { useBoolean } from '@fluentui/react-hooks';
 // import closeIcon from '../../icons/closeIcon.png';
 
 import './IconList.css';
+import OnlinePeople from '../OnlinePeople/OnlinePeople'
 
 initializeIcons();
 const stackTokens: IStackTokens = { childrenGap: 20 };
@@ -20,13 +22,26 @@ const micOnIcon: IIconProps = { iconName: 'Microphone' };
 const camOffIcon: IIconProps = { iconName: 'VideoOff' };
 const camOnIcon: IIconProps = { iconName: 'Video' };
 const screenCast: IIconProps = { iconName: 'ScreenCast' };
+const people: IIconProps = { iconName: 'People' };
+const peopleAdd: IIconProps = { iconName: 'PeopleAdd' };
 
-const InfoBar = ({ room, media, peer}) => {
+const modelProps = {
+  isBlocking: false,
+  styles: { main: { maxWidth: 450 } },
+};
+
+const dialogContentProps = {
+  type: DialogType.largeHeader,
+  title: 'Participants in the call',
+};
+
+const InfoBar = ({ room, media, peer, users}) => {
 
   //const [muted, { toggle: setMuted }] = useBoolean(false);
   const [muted, setMuted] = useState(false);
   const [cameraOff, setCameraOff] = useState(false);
   const [isOpen, { setTrue: openMessage, setFalse: dismissMessage }] = useBoolean(false);
+  const [hideDialog, { toggle: toggleHideDialog }] = useBoolean(true);
 
   const toggleCamera = () => {
         // Toggle Webcam on/off
@@ -88,14 +103,31 @@ const InfoBar = ({ room, media, peer}) => {
           iconProps={endCall}
           />  
         </Link> 
-        <DefaultButton text="Open panel" onClick={openMessage} />
-      
-        <Panel
-          isOpen={isOpen}
-          closeButtonAriaLabel="Close"
-          isHiddenOnDismiss={true}
-          headerText="Message"
-          onDismiss={dismissMessage}/>
+        <DefaultButton 
+          secondaryText="See User List" 
+          onClick={toggleHideDialog} 
+          text="Participants" 
+          iconProps={people}
+        />      
+        <Dialog
+          hidden={hideDialog}
+          onDismiss={toggleHideDialog}
+          dialogContentProps={dialogContentProps}
+          modalProps={modelProps}
+          minWidth={100}
+        >
+            <OnlinePeople users={users}/>
+            <DialogFooter>
+              <Stack tokens={{childrenGap: 10}} horizontal horizontalAlign='center'>
+                <PrimaryButton 
+                  text="Add Participants"
+                  iconProps={peopleAdd}
+                />
+              </Stack>
+            </DialogFooter>
+          </Dialog>
+
+          
       </Stack>      
     </div>
   </div>
