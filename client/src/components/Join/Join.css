@@ -2,23 +2,60 @@ html, body {
   font-family: 'Roboto', sans-serif;
   padding: 0;
   margin: 0;
-  background-color: #aae261;
+  height: 100%;
+  /* background-color: #b9ced1;
+  background-image: url('https://image.freepik.com/free-vector/pastel-blue-watercolor-with-golden-frame_52683-52747.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center; */
 }
 
 #root {
   height: 100vh;
 }
 
+.wholePage {
+  background-color: #6d0e0e;
+}
+
+
 .LoginBox {
   display: flex;
   justify-content: center;
   align-items: center;
+  vertical-align: top;
+  align-self: center;
+  background-color: blue;
+  width: 50%;
+  margin-left: 25%;
 }
 
+.previewVideo {
+  display: flex;
+  width: 50%;
+  background-color: #eeff00;
+  padding: 10px;
+  border-radius: 30px;
+  vertical-align:top;  
+  align-items: center;
+}
+
+video {
+  height: 40%;
+  border-radius: 1rem;
+  width: 50%;
+  object-fit:cover;
+  transform: rotateY(180deg);
+  display: block
+}
 .InnerContainer {
-  width: 35%;
+  width: 50%;
   background-color: #acacac;
   padding: 15px 20px;
+  border-radius: 30px;
+  vertical-align:top;
+  background-image: url('https://image.freepik.com/free-photo/minimalist-monochromatic-blue-wallpaper_23-2148667754.jpg');
+  background-size: cover;
 }
 
 .heading {

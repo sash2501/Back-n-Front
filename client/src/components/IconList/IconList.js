@@ -123,11 +123,21 @@ const InfoBar = ({ room, media, peer, users}) => {
                   text="Add Participants"
                   iconProps={peopleAdd}
                 />
+                <a href="mailto:?subject=I wanted you to see this site&amp;body=Check out this site http://www.website.com."
+                  title="Share by Email"
+                  target="_blank"
+                  rel="noopener noreferrer">
+                  <img src="http://png-2.findicons.com/files/icons/573/must_have/48/mail.png"/>
+                </a>
+                <a href="https://mail.google.com/mail/u/0/?fs=1&su=Join+Sassycode's+Team+meeting&body=User+is+inviting+you+to+a+meeting.%0A%0AJoin+the+meeting:%0Ahttp://localhost:3000/%0A%0AJoin+Room:+_roomname_&tf=cm"
+                  title="Share by Gmail"
+                  target="_blank"
+                  rel="noopener noreferrer">
+                  <img src="http://png-2.findicons.com/files/icons/573/must_have/48/mail.png"/>
+                </a>
               </Stack>
             </DialogFooter>
           </Dialog>
-
-          
       </Stack>      
     </div>
   </div>
