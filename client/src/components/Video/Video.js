@@ -1,4 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
+import { Stack, IStackTokens} from '@fluentui/react/lib/Stack';
+
+import styled from "styled-components";
+import './Video.css'
+
+const VideoCell = styled.video`
+    height: 100%;
+    width: 100%;
+    display: block;
+`;
 
 const Video = (props) => {
     const ref = useRef();
@@ -15,8 +25,13 @@ const Video = (props) => {
     }, []);
 
     return (
-        console.log("displaying video"),
-        <video playsInline autoPlay ref={ref} />
+        console.log("displaying video",props.peer.id),
+        <div className="videoCell">
+        <Stack vertical>
+            <VideoCell playsInline autoPlay ref={ref} />
+            <h2><center>user</center></h2>
+        </Stack>
+        </div>
     );
 }
 
