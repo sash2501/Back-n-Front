@@ -12,14 +12,15 @@ import MessageDisplayer from '../Chat/MessageDisplayer/MessageDisplayer';
 import IconList from '../IconList/IconList';
 import Input from '../Chat/Input/Input';
 import Video from '../Video/Video'
+// import VideoGrid from '../VideoGrid/VideoGrid'
 
 //import OnlinePeople from '../OnlinePeople/OnlinePeople';
 
 import './Call.css';
 // client-side
 const io = require("socket.io-client");
-const ENDPOINT = 'http://localhost:5000'
-const stackTokens: IStackTokens = { childrenGap: 20 };
+const ENDPOINT = 'http://localhost:5001'
+//const stackTokens: IStackTokens = { childrenGap: 20 };
 
 let socket;
 
@@ -30,7 +31,8 @@ const Container = styled.div`
     width: 90%;
     margin: auto;
     flex-wrap: wrap;
-    justifyContent: center
+    justifyContent: center;
+    background-color: #2dbd6e;
 `;
 
 const StyledVideo = styled.video`
@@ -41,22 +43,30 @@ const StyledVideo = styled.video`
 //     height: window.innerHeight / 2,
 //     width: window.innerWidth / 2
 // };
-  
+
+const stackTokens: IStackTokens = {
+    childrenGap: `10 10`, //rowGap + ' ' + columnGap,
+    padding: `10px 10px 10px 10px`, //`${paddingTop}px ${paddingRight}px ${paddingBottom}px ${paddingLeft}px`,
+  };
+
 const Call = ( {location}) => {
 
   const [username, setUserName] = useState('');
   const [roomname, setRoomName] = useState(''); //initialize as empty string
   const [message, setMessage] = useState(''); //store message
   const [messageList, setMessageList] = useState([]); //store all messages
+  const [sub, setSub] = useState(''); //store subs
+  const [subList, setSubList] = useState([]); //store all subs
   const [usersInRoom, setUsersInRoom] = useState('');
-  const [mystream, setMyStream] = useState(null)  
+  const [myStream, setMyStream] = useState(null)  
   //----------------------------------------------------
   const [peersList, setPeersList] = useState([]); //ui reflection of state
   const userVideo = useRef();
   const peersRef = useRef([]); //related to ui and visuals
   const [callEnded, setCallEnded] = useState(false);
-  const myPeer = useRef();
+  let myPeer;
   let creatingID;
+  const trialApnavideo = document.createElement('video');
   
   useEffect( () => {
     const { name, room } = queryString.parse(location.search);
@@ -69,7 +79,7 @@ const Call = ( {location}) => {
 
     //socket = io.connect("/");
     navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(stream => {
-        userVideo.current.srcObject = stream;
+        //userVideo.current.srcObject = stream;
         setMyStream(stream);
         socket.emit("join room", {name, room}, error => {if(error) alert(error)});
 
@@ -90,7 +100,7 @@ const Call = ( {location}) => {
                   peer,
                   });
             })
-            console.log("peerlisist after create peer", peers);
+            //console.log("peerlisist after create peer", peers);
             setPeersList(peers);
         })
 
@@ -110,7 +120,7 @@ const Call = ( {location}) => {
             console.log("user joined obj", peerObj);
             
             setPeersList(users => [...users, peerObj]);
-            console.log("[eerslist after add peer", peersList);
+            //console.log("[eerslist after add peer", peersList);
         });
 
         socket.on("receiving returned signal", payload => {
@@ -153,11 +163,14 @@ const Call = ( {location}) => {
     socket.on("roomData", ({users }) => {
       setUsersInRoom(users);
     });
+
+    socket.on('transcript', (transcript)=> {
+      setSubList(subList => [...subList, sub]);
+    })
   },[]);
 
   function createPeer(userToSignal, callerID, stream) {
-        creatingID = userToSignal;
-        console.log("in create peer", userToSignal);
+        console.log("in create peer", callerID, username);
         const peer = new Peer({
             initiator: true,
             trickle: false,
@@ -165,14 +178,14 @@ const Call = ( {location}) => {
         });
 
         peer.on("signal", signal => {
-            socket.emit("sending signal", { userToSignal, callerID, signal })
+            socket.emit("sending signal", { userToSignal, callerID, signal , username})
         })
-        myPeer.current = peer;
+        // myPeer.current = peer;
         return peer;
     }
 
   function addPeer(incomingSignal, callerID, stream) {
-      console.log("in addPeer", incomingSignal);
+      console.log("in addPeer", callerID);
       const peer = new Peer({
           initiator: false,
           trickle: false,
@@ -199,6 +212,18 @@ const Call = ( {location}) => {
     }
   }
 
+  const sendTranscript = (transcript) => {
+    console.log("Sending sub");
+    console.log("Sub is full with", transcript);
+
+    if(transcript) {
+      
+      socket.emit('sendTranscript', transcript, () => setSub(''));
+    }
+  }
+
+
+  console.log("transcipt passed", sub);
   // const getUsersList = (event) => {
   //   event.preventDefualt();
 
@@ -210,33 +235,54 @@ const Call = ( {location}) => {
     return peersList.map((peer)=> peer.peerID).indexOf(v.peerID) == i
   })
 
-  console.log("peerslist final",peersList);  
+  // if(peersList.length === 1)  {
+  //   //console.log("length is only 1");
+  //   peersList.map((peer) => {
+  //     myPeer = peer;
+  //   })
+  //   console.log(myPeer.peerID);
+
+  // }
+
+  //console.log("peerslist final",peersList);  
   console.log("users in room", usersInRoom);
   console.log("result wout duplicate", peerList_duplicateLess);
 
+ //console.log("myownSTream",myStream);
   return (
     <div>
+    <Stack Vertical>
       <Stack horizontal>
       <Stack vertical>
-        <IconList room={roomname} media={mystream} peer={myPeer} users={usersInRoom}/> 
+        <IconList room={roomname} media={myStream} peer={myPeer} users={usersInRoom}  sub={sub} setSub={setSub} sendSub={sendTranscript}/> 
         <Container>
-            <StyledVideo id="myVideo" muted ref={userVideo} autoPlay playsInline />
+        {/* <Stack horizontal> */}
+        <Stack
+          horizontal
+          wrap={true}
+          disableShrink={false}
+          horizontalAlign="center"
+          verticalAlign="center"
+          tokens={stackTokens} 
+        >
+            {/* <StyledVideo id="myVideo" muted ref={userVideo} autoPlay playsInline /> */}
             {peerList_duplicateLess.map((peer, id) => {
-                return (
-                    <Video key={peer.peerID} peer={peer.peer} />
+                console.log("passed video peer",peer)
+                return (                    
+                    <Video key={peer.peerID} peer={peer.peer} videoId={peer.peerID} normalRef={myStream} users={usersInRoom} />
                 );
             })}
+            </Stack>
         </Container>  
-        {/* <OnlinePeople users={usersInRoom}/> */}
       </Stack>
       <div className="messageContainer">
         <div className="container">
-        <InfoBar />   
-        <MessageDisplayer messages={messageList} name={username} />   
-        
+          <InfoBar />   
+          <MessageDisplayer messages={messageList} name={username} />   
           <Input message={message} setMessage={setMessage} sendMessage={sendMessage}/>
         </div>
       </div>
+      </Stack>
       </Stack>
       
     

@@ -12,11 +12,12 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  background: #FFFFFF;
+  background: #abe40f;
   border-radius: 8px;
-  height: 100vh;
-  width: 20vw;
+  height: 100%;
+  width: 18vw;
   float: right;
+  border-color: black;
 }
 
 video {
@@ -31,4 +32,24 @@ video {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
+}
+
+/* .box {
+  
+  min-height: 20rem;
+  margin: 30px;
+  padding: 20px;
+  border-radius: 5px;
+} */
+.box {
+  display: flex;
+  box-shadow: -4px 10px 35px -1px rgba(0, 0, 0, 0.75);
+  flex-direction: column;
+  justify-content: space-between;
+  background: #abe40f;
+  border-radius: 8px;
+  height: auto;
+  width: 18vw;
+  float: left;
+  border-color: black;
 }
