@@ -8,28 +8,48 @@ const VideoCell = styled.video`
     height: 100%;
     width: 100%;
     display: block;
+    align-items: stretch;
 `;
 
 const Video = (props) => {
     const ref = useRef();
+    console.log("video props",props);
+    const [ismuted, setMuted] = useState(false)
+    const [name, setName] = useState('')
 
     useEffect(() => {
         props.peer.on("stream", stream => {
-            console.log("streaming video");
+            //console.log("others stream", stream.id);
+            //console.log("apna stream id", props.normalRef.id);
             ref.current.srcObject = stream;
+
+            if(stream.id === props.normalRef.id) {
+                setMuted(true);
+            }
         })
+        
         props.peer.on('close', () => {
             //ref.current.remove();
             console.log("closing peer in video element");
         })
+
+        props.users.forEach(user => {
+                console.log("usersss in video comp",user.id, user.name);      
+                if(user.id === props.videoId) {
+                    setName(user.name)
+                }      
+            })
+
+        //console.log("ref video ka",ref);
+        //console.log("ref passed wala", props.NormalRef)
     }, []);
 
     return (
         console.log("displaying video",props.peer.id),
         <div className="videoCell">
-        <Stack vertical>
-            <VideoCell playsInline autoPlay ref={ref} />
-            <h2><center>user</center></h2>
+        <Stack vertical tokens={{childrenGap: 10}}>
+            <VideoCell playsInline muted={ismuted} autoPlay ref={ref} />
+            <h2><center>{name}</center></h2>
         </Stack>
         </div>
     );
