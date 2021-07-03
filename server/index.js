@@ -41,6 +41,15 @@ io.on("connect", (socket) => {
     callback();
   })
 
+  socket.on('sendTranscript', (transcript, callback) => {
+    const user = getUser(socket.id);
+    console.log("send transcipt emiited");
+
+    io.to(user.room).emit('transcipt', { user: user.name, text: transcript})
+    callback();
+
+  })
+
   socket.on('sendMessage', (messageFromBox, callback)=> {
     const user = getUser(socket.id);
 
@@ -50,8 +59,8 @@ io.on("connect", (socket) => {
 
   socket.on("sending signal", payload => {
         //console.log("sending signal ",payload.userToSignal)
-        socket.broadcast.to(payload.userToSignal).emit('user joined', { signal: payload.signal, callerID: payload.callerID });
-        //io.to(payload.userToSignal).emit('user joined', { signal: payload.signal, callerID: payload.callerID });
+        //socket.broadcast.to(payload.userToSignal).emit('user joined', { signal: payload.signal, callerID: payload.callerID });
+        io.to(payload.userToSignal).emit('user joined', { signal: payload.signal, callerID: payload.callerID });
     });
 
     socket.on("returning signal", payload => {
@@ -76,4 +85,4 @@ io.on("connect", (socket) => {
 });
 
 
-server.listen(process.env.PORT || 5000, () => console.log(`Server has started.`));
+server.listen(process.env.PORT || 5001, () => console.log(`Server has started.`));
