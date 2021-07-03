@@ -8,7 +8,6 @@ import { createTheme, ITheme } from '@fluentui/react/lib/Styling';
 import styled from "styled-components";
 
 import { Link } from "react-router-dom";
-import background from "../../purple_mountain.webP";
 
 import './Join.css';
 
