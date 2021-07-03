@@ -1,4 +1,5 @@
 import React from 'react';
+import { PrimaryButton, DefaultButton }  from '@fluentui/react/lib/Button';
 
 // import onlineIcon from '../../icons/onlineIcon.png';
 // import closeIcon from '../../icons/closeIcon.png';
@@ -16,7 +17,9 @@ const Input = ({ message, setMessage, sendMessage }) => (
       onChange={({ target: { value } }) => setMessage(value)}
       onKeyPress={event => event.key === 'Enter' ? sendMessage(event) : null}
     />
-    <button className="sendButton" onClick={(event) => sendMessage(event)} >Send</button>
+    <PrimaryButton className="sendButton" 
+    text="Send"
+    onClick={(event) => sendMessage(event)} ></PrimaryButton>
   </form>  
 )
 export default Input;

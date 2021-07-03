@@ -24,4 +24,7 @@ input:focus, textarea:focus, select:focus{
   display: inline-block;
   border: none;
   width: 20%;
+  border-radius: 5px;
+  align-items: center;
+  height: 100%;
 }
