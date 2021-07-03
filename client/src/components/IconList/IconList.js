@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { IIconProps, initializeIcons } from '@fluentui/react';
 import { Stack, IStackTokens} from '@fluentui/react/lib/Stack';
 import { PrimaryButton, DefaultButton }  from '@fluentui/react/lib/Button';
@@ -13,6 +13,7 @@ import { useBoolean } from '@fluentui/react-hooks';
 
 import './IconList.css';
 import OnlinePeople from '../OnlinePeople/OnlinePeople'
+import Subtitles from '../Subtitles/Subtitles'
 
 initializeIcons();
 const stackTokens: IStackTokens = { childrenGap: 20 };
@@ -35,13 +36,76 @@ const dialogContentProps = {
   title: 'Participants in the call',
 };
 
-const InfoBar = ({ room, media, peer, users}) => {
+const buttonStyle = { borderRadius: '5px' } //, width: '40px', height: '28px'
+
+const SpeechRecognition =
+  window.SpeechRecognition || window.webkitSpeechRecognition
+const mic = new SpeechRecognition()
+
+mic.continuous = true
+mic.interimResults = true
+mic.lang = 'en-US'
+
+const InfoBar = ({ room, media, peer, users, sub, setSub, sendSub}) => {
 
   //const [muted, { toggle: setMuted }] = useBoolean(false);
   const [muted, setMuted] = useState(false);
   const [cameraOff, setCameraOff] = useState(false);
   const [isOpen, { setTrue: openMessage, setFalse: dismissMessage }] = useBoolean(false);
   const [hideDialog, { toggle: toggleHideDialog }] = useBoolean(true);
+  const [isListening, setIsListening] = useState(true)
+  const [note, setNote] = useState(null)
+  const [savedNotes, setSavedNotes] = useState([])
+
+  useEffect(() => {
+    handleListen()
+    //console.log("listening mic")
+  }, [isListening])
+
+  const handleListen = () => {
+    if (isListening) {
+      mic.start()
+      mic.onend = () => {
+        //console.log('continue..')
+        mic.start()
+      }
+    } else {
+      mic.stop()
+      mic.onend = () => {
+        //console.log('Stopped Mic on Click')
+      }
+    }
+    mic.onstart = () => {
+      //console.log('Mics on')
+    }
+
+    mic.onresult = event => {
+      const transcript = Array.from(event.results)
+        .map(result => result[0])
+        .map(result => result.transcript)
+        .join('')
+      //console.log(transcript)
+      setNote(transcript)
+      setSub(transcript)
+      if(transcript) {
+
+        sendSub(transcript)
+      }
+      // setSavedNotes([...savedNotes, transcript])
+
+      console.log("savedNotes in toggle",savedNotes)
+      mic.onerror = event => {
+        //console.log(event.error)
+      }
+    }
+  }
+
+  const handleSaveNote = () => {
+    
+    setSavedNotes([...savedNotes, note])
+   
+    setNote('')
+  }
 
   const toggleCamera = () => {
         // Toggle Webcam on/off
@@ -54,6 +118,10 @@ const InfoBar = ({ room, media, peer, users}) => {
         // Toggle Mic on/off
         media.getAudioTracks()[0].enabled = !media.getAudioTracks()[0].enabled;
 
+        setIsListening(prevState => !prevState)
+        // setSavedNotes([...savedNotes, note])
+        console.log("savedNotes in toggle",savedNotes)
+        setNote('')
         setMuted(!muted);
     }
   
@@ -72,35 +140,51 @@ const InfoBar = ({ room, media, peer, users}) => {
 
 
   return(
+    <><Subtitles savedNotes={savedNotes}/>
+     <div className="box">
+          <button onClick={handleSaveNote} disabled={!note}>
+              Save Note
+          </button>
+          <p>{note}</p>
+          {/* {savedNotes.map(n => (
+            <p key={n}>{n}</p>
+          ))} */}
+        </div>
   <div className="menuBar">
     <div className="roomNameContainer" >
       <h3>Room: {room}</h3>
     </div>
     <div className="commandBar">
       <Stack horizontal tokens={stackTokens}>
+        {isListening ? <span>🎙️</span> : <span>🛑🎙️</span>}
         <DefaultButton
           toggle
           checked={muted}
           text={muted ? 'Mic muted' : 'Mic unmuted'}
           iconProps={muted ? micOffIcon : micOnIcon}
           onClick={toggleMicrophone}
-        />  
+          style={buttonStyle}
+        />          
+       
         <DefaultButton
           toggle
           checked={cameraOff}
           text={cameraOff ? 'Cam Off' : 'Cam On'}
           iconProps={cameraOff ? camOffIcon : camOnIcon}
           onClick={toggleCamera}
+          style={buttonStyle}
         />  
         <DefaultButton 
           text="Screen" 
           onClick={shareScreen} 
           iconProps={screenCast}
+          style={buttonStyle}
         />
         <Link to={`/`}>
           <DefaultButton 
           text="End Call" 
           iconProps={endCall}
+          style={buttonStyle}
           />  
         </Link> 
         <DefaultButton 
@@ -108,6 +192,7 @@ const InfoBar = ({ room, media, peer, users}) => {
           onClick={toggleHideDialog} 
           text="Participants" 
           iconProps={people}
+          style={buttonStyle}
         />      
         <Dialog
           hidden={hideDialog}
@@ -141,6 +226,7 @@ const InfoBar = ({ room, media, peer, users}) => {
       </Stack>      
     </div>
   </div>
+  </>
 );
 };
 
