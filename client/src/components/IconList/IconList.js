@@ -138,6 +138,17 @@ const InfoBar = ({ room, media, peer, users, sub, setSub, sendSub}) => {
       })
     }
 
+    function reload() {
+      console.log("reloading")
+      window.location.reload();
+}
+
+reload = function() {
+  window.location.href = "http://localhost:3000/";
+}
+
+console.log("call location in iconlist",window.location)
+
 
   return(
     <><Subtitles savedNotes={savedNotes}/>
@@ -185,6 +196,7 @@ const InfoBar = ({ room, media, peer, users, sub, setSub, sendSub}) => {
           text="End Call" 
           iconProps={endCall}
           style={buttonStyle}
+          onClick={reload}
           />  
         </Link> 
         <DefaultButton 

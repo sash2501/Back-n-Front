@@ -232,7 +232,7 @@ const Call = ( {location}) => {
 
   console.log(message, messageList);
   const peerList_duplicateLess = peersList.filter((v,i) => {
-    return peersList.map((peer)=> peer.peerID).indexOf(v.peerID) == i
+    return peersList.map((peer)=> peer.peerID).indexOf(v.peerID) === i
   })
 
   // if(peersList.length === 1)  {
@@ -247,6 +247,7 @@ const Call = ( {location}) => {
   //console.log("peerslist final",peersList);  
   console.log("users in room", usersInRoom);
   console.log("result wout duplicate", peerList_duplicateLess);
+  console.log("location",location)
 
  //console.log("myownSTream",myStream);
   return (

@@ -41,6 +41,8 @@ const Join = () => {
     })
     
   }, [])
+
+  //console.log(window.location);
   
   return (    
     <div className="wholePage"
