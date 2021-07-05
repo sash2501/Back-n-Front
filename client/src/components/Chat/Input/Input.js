@@ -1,11 +1,14 @@
 import React from 'react';
-import { PrimaryButton, DefaultButton }  from '@fluentui/react/lib/Button';
+import { IconButton } from '@fluentui/react/lib/Button';
+import { IIconProps, initializeIcons } from '@fluentui/react';
 
 // import onlineIcon from '../../icons/onlineIcon.png';
 // import closeIcon from '../../icons/closeIcon.png';
 
 import './Input.css';
+initializeIcons();
 
+const send: IIconProps = { iconName: 'Send' };
 
 const Input = ({ message, setMessage, sendMessage }) => (
   <form className="form">
@@ -17,9 +20,10 @@ const Input = ({ message, setMessage, sendMessage }) => (
       onChange={({ target: { value } }) => setMessage(value)}
       onKeyPress={event => event.key === 'Enter' ? sendMessage(event) : null}
     />
-    <PrimaryButton className="sendButton" 
-    text="Send"
-    onClick={(event) => sendMessage(event)} ></PrimaryButton>
+    <IconButton className="sendButton" 
+    iconProps={send}
+    title="Send"
+    onClick={(event) => sendMessage(event)} />
   </form>  
 )
 export default Input;

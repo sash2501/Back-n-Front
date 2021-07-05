@@ -5,9 +5,9 @@
 
 .input {
   border: none;
-  border-radius: 0;
+  border-radius: 5px;
   padding: 5%;
-  width: 80%;
+  width: 100%;
   font-size: 1.2em;
 }
 
@@ -20,10 +20,8 @@ input:focus, textarea:focus, select:focus{
   text-transform: uppercase;
   text-decoration: none;
   background: #2979FF;
-  padding: 20px;
   display: inline-block;
   border: none;
-  width: 20%;
   border-radius: 5px;
   align-items: center;
   height: 100%;
