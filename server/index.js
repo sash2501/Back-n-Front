@@ -29,6 +29,8 @@ io.on("connect", (socket) => {
 
     socket.broadcast.to(user.room).emit('message', {user: 'Jarvis', text: `${user.name} has joined :D`})
 
+    socket.broadcast.to(user.room).emit('transcript', {user: 'Jarvis', text: `${user.name} is going to speak`})
+
     io.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room) });
 
     socket.broadcast.to(user.room).emit('roomData', { room: user.room, users: getUsersInRoom(user.room) })
@@ -43,9 +45,9 @@ io.on("connect", (socket) => {
 
   socket.on('sendTranscript', (transcript, callback) => {
     const user = getUser(socket.id);
-    console.log("send transcipt emiited");
+    console.log("send transcipt emiited", user);
 
-    io.to(user.room).emit('transcipt', { user: user.name, text: transcript})
+    io.to(user.room).emit('transcript', { user: user.name, text: transcript})
     callback();
 
   })

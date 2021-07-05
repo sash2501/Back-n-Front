@@ -12,6 +12,7 @@ import MessageDisplayer from '../Chat/MessageDisplayer/MessageDisplayer';
 import IconList from '../IconList/IconList';
 import Input from '../Chat/Input/Input';
 import Video from '../Video/Video'
+import Subtitles from '../Subtitles/Subtitles';
 // import VideoGrid from '../VideoGrid/VideoGrid'
 
 //import OnlinePeople from '../OnlinePeople/OnlinePeople';
@@ -27,9 +28,8 @@ let socket;
 const Container = styled.div`
     padding: 20px;
     display: flex;
-    height: 100vh;
-    width: 90%;
-    margin: auto;
+    height: 100%;
+    // margin: auto;
     flex-wrap: wrap;
     justifyContent: center;
     background-color: #2dbd6e;
@@ -67,6 +67,8 @@ const Call = ( {location}) => {
   let myPeer;
   let creatingID;
   const trialApnavideo = document.createElement('video');
+  const [subUser, setSubUser] = useState('');
+  const [subText, setSubText] = useState('');
   
   useEffect( () => {
     const { name, room } = queryString.parse(location.search);
@@ -165,9 +167,27 @@ const Call = ( {location}) => {
     });
 
     socket.on('transcript', (transcript)=> {
-      setSubList(subList => [...subList, sub]);
+          console.log("transcript object",transcript)
+          const subTrial = {              
+              user: transcript.user,
+              text: transcript.text,
+            }
+            console.log("user and text",transcript.user, transcript.text);
+          setSubUser(transcript.user);
+          setSubText(transcript.text);
+
+          setSubList([subTrial]);
+          
+          console.log(subTrial)
+          setSub(subTrial);
+          console.log("sub",sub)         
+          
     })
   },[]);
+
+  console.log("sub out",sub)
+  console.log("sublist out",subList);
+          
 
   function createPeer(userToSignal, callerID, stream) {
         console.log("in create peer", callerID, username);
@@ -218,7 +238,7 @@ const Call = ( {location}) => {
 
     if(transcript) {
       
-      socket.emit('sendTranscript', transcript, () => setSub(''));
+      socket.emit('sendTranscript', transcript, () => console.log("sending it rn transcript"));
     }
   }
 
@@ -247,7 +267,8 @@ const Call = ( {location}) => {
   //console.log("peerslist final",peersList);  
   console.log("users in room", usersInRoom);
   console.log("result wout duplicate", peerList_duplicateLess);
-  console.log("location",location)
+  //console.log("location",location)
+  console.log("sub  sent",sub)
 
  //console.log("myownSTream",myStream);
   return (
@@ -255,8 +276,9 @@ const Call = ( {location}) => {
     <Stack Vertical>
       <Stack horizontal>
       <Stack vertical>
-        <IconList room={roomname} media={myStream} peer={myPeer} users={usersInRoom}  sub={sub} setSub={setSub} sendSub={sendTranscript}/> 
-        <Container>
+        <IconList room={roomname} media={myStream} peer={myPeer} users={usersInRoom}  sub={sub} sendSub={sendTranscript}/> 
+        <div className="videoGrid">
+        {/* <Container> */}
         {/* <Stack horizontal> */}
         <Stack
           horizontal
@@ -274,7 +296,8 @@ const Call = ( {location}) => {
                 );
             })}
             </Stack>
-        </Container>  
+        {/* </Container>   */}
+        </div>
       </Stack>
       <div className="messageContainer">
         <div className="container">
@@ -284,8 +307,9 @@ const Call = ( {location}) => {
         </div>
       </div>
       </Stack>
-      </Stack>
       
+      <Subtitles subUser={subUser} subText={subText}/>
+      </Stack>
     
     </div>
   )
