@@ -5,6 +5,7 @@ import queryString from 'query-string';
 import styled from "styled-components";
 import { Stack, IStackTokens} from '@fluentui/react/lib/Stack';
 import { DefaultButton } from '@fluentui/react/lib/Button';
+import { TextField } from '@fluentui/react/lib/TextField';
 
 
 import InfoBar from '../Chat/MessageBar/MessageBar';
@@ -76,8 +77,11 @@ const Call = ( {location}) => {
   const [subUser, setSubUser] = useState('');
   const [subText, setSubText] = useState('');
   const [showSubtitle, setShowSubtitle] = useState(false);
+  const [note, setNote] = useState('');
   const [myPeer, setmyPeer] = useState(null);
-  
+
+  const editor = document.getElementById("editor")
+
   useEffect( () => {
     const { name, room } = queryString.parse(location.search);
 
@@ -153,7 +157,6 @@ const Call = ( {location}) => {
         })
     })
 
-    
 
     // return () => {
     //     //disconnect useEffect hook -  unmounting of component
@@ -191,7 +194,21 @@ const Call = ( {location}) => {
           console.log("sub",sub)         
           
     })
+
+    socket.on('notes', (notes) => {
+      console.log("notes object", notes);
+      console.log("notes text", notes.text)
+      setNote(notes.text)
+    })
   },[]);
+
+  // useEffect(() => {
+  //   console.log("Sending notes", notes)    
+  //     if(note) {
+  //       console.log("emiting notes")
+  //       socket.emit('sendNotes', note ,() => console.log("sending notes to server"));
+  //   }
+  // },[]);
 
   console.log("sub out",sub)
   console.log("sublist out",subList);
@@ -250,6 +267,14 @@ const Call = ( {location}) => {
     }
   }
 
+  const sendNotes = (value) => {
+    console.log("Sending notes", value)    
+      if(value.length>=0) {
+        console.log("emiting notes")
+        socket.emit('sendNotes', value ,() => console.log("sending notes to server"));
+    }    
+  }
+
 
   console.log("transcipt passed", sub);
   // const getUsersList = (event) => {
@@ -279,6 +304,17 @@ const Call = ( {location}) => {
   console.log("sub  sent",sub)
   console.log("showSubtitle",showSubtitle)
   console.log("mypeer",myPeer)
+  console.log("note in end", note)
+
+  console.log("edito",editor)
+  if(editor) {
+    editor.addEventListener("keyup", (evt) => {
+      const text = editor.value
+      console.log("editor txt",text)
+      socket.emit('sendNotes', text ,() => console.log("sending notes to server"));
+
+  })}
+  if(editor) editor.value = note
  //console.log("myownSTream",myStream);
   return (
     <div>
@@ -320,6 +356,22 @@ const Call = ( {location}) => {
       </Stack>
       
       {showSubtitle && (<Subtitles subUser={subUser} subText={subText}/>)}
+      <input
+      type="text"
+      placeholder="Notes."
+      value={note}
+      onChange={({ target: { value } }) => {
+        setNote(value)
+        console.log("abhi wala value", value,note)
+        sendNotes(value)
+        }}
+    />
+    <input
+      type="text"
+      placeholder="Test."
+      value={note}
+    />
+    <textarea rows="30" cols="50" id="editor" placeholder="Type Your Text..."></textarea>
       </Stack>
     
     </div>

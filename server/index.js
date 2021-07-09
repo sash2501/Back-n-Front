@@ -59,6 +59,15 @@ io.on("connect", (socket) => {
     callback();
   })
 
+  socket.on('sendNotes', (noteFromPad, callback) => {
+    console.log("received notes", noteFromPad);
+    const user = getUser(socket.id);
+
+    socket.broadcast.to(user.room).emit('notes', {text: noteFromPad})
+
+    callback();
+  })
+
   socket.on("sending signal", payload => {
         //console.log("sending signal ",payload.userToSignal)
         //socket.broadcast.to(payload.userToSignal).emit('user joined', { signal: payload.signal, callerID: payload.callerID });
