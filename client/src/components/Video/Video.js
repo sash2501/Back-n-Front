@@ -13,7 +13,7 @@ const VideoCell = styled.video`
 
 const Video = (props) => {
     const ref = useRef();
-    console.log("video props",props);
+    //console.log("video props",props);
     const [ismuted, setMuted] = useState(false)
     const [name, setName] = useState('')
 
@@ -25,6 +25,7 @@ const Video = (props) => {
 
             if(stream.id === props.normalRef.id) {
                 setMuted(true);
+                props.setmyPeer(props.peer);
             }
         })
         
@@ -34,7 +35,7 @@ const Video = (props) => {
         })
 
         props.users.forEach(user => {
-                console.log("usersss in video comp",user.id, user.name);      
+                //console.log("usersss in video comp",user.id, user.name);      
                 if(user.id === props.videoId) {
                     setName(user.name)
                 }      
@@ -45,7 +46,6 @@ const Video = (props) => {
     }, []);
 
     return (
-        console.log("displaying video",props.peer.id),
         <div className="videoCell">
         <Stack vertical tokens={{childrenGap: 10}}>
             <VideoCell playsInline muted={ismuted} autoPlay ref={ref} />

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { IIconProps, initializeIcons } from '@fluentui/react';
 import { Stack, IStackTokens} from '@fluentui/react/lib/Stack';
-import { PrimaryButton, DefaultButton }  from '@fluentui/react/lib/Button';
+import { IconButton, PrimaryButton, DefaultButton }  from '@fluentui/react/lib/Button';
 import { Link } from "react-router-dom";
 import { Panel } from '@fluentui/react/lib/Panel';
 import { Dialog, DialogType, DialogFooter } from '@fluentui/react/lib/Dialog';
@@ -25,6 +25,8 @@ const camOnIcon: IIconProps = { iconName: 'Video' };
 const screenCast: IIconProps = { iconName: 'ScreenCast' };
 const people: IIconProps = { iconName: 'People' };
 const peopleAdd: IIconProps = { iconName: 'PeopleAdd' };
+const mailAdd: IIconProps = { iconName: 'NewMail' };
+const cc: IIconProps = { iconName: 'CCSolid' };
 
 const modelProps = {
   isBlocking: false,
@@ -36,7 +38,7 @@ const dialogContentProps = {
   title: 'Participants in the call',
 };
 
-const buttonStyle = { borderRadius: '5px' } //, width: '40px', height: '28px'
+const buttonStyle = { borderRadius: '5px', boxShadow: '-4px 10px 35px -1px rgba(0, 0, 0, 0.75)'} //, width: '40px', height: '28px'
 
 const SpeechRecognition =
   window.SpeechRecognition || window.webkitSpeechRecognition
@@ -46,7 +48,7 @@ mic.continuous = true
 mic.interimResults = true
 mic.lang = 'en-US'
 
-const InfoBar = ({ room, media, peer, users, sub, setSub, sendSub}) => {
+const InfoBar = ({ room, media, myPeer, users, sub, setSub, sendSub, setShowSubtitle, showSubtitle, myStream}) => {
 
   //const [muted, { toggle: setMuted }] = useBoolean(false);
   const [muted, setMuted] = useState(false);
@@ -86,7 +88,7 @@ const InfoBar = ({ room, media, peer, users, sub, setSub, sendSub}) => {
         .join('')
       //console.log(transcript)
       setNote(transcript)
-      setSub(transcript)
+      //setSub(transcript)
       if(transcript) {
 
         sendSub(transcript)
@@ -124,6 +126,11 @@ const InfoBar = ({ room, media, peer, users, sub, setSub, sendSub}) => {
         setNote('')
         setMuted(!muted);
     }
+
+  const toggleSubtitle = () => {
+    setShowSubtitle(!showSubtitle)    
+        
+  }
   
     const shareScreen =() => {
       navigator.mediaDevices.getDisplayMedia({cursor:true})
@@ -135,6 +142,12 @@ const InfoBar = ({ room, media, peer, users, sub, setSub, sendSub}) => {
         // myPeer.replaceTrack(screenStream.getVideoTracks()[0],stream.getVideoTracks()[0],media)
         // userVideo.current.srcObject=media
         //}
+        myPeer.replaceTrack(myStream.getVideoTracks()[0],screenStream.getVideoTracks()[0],myStream)
+        //userVideo.current.srcObject=screenStream
+
+        // screenStream.getTracks()[0].onended = () =>{
+        //   myPeer.current.replaceTrack(screenStream.getVideoTracks()[0],myStream.getVideoTracks()[0],myStream)
+        //   userVideo.current.srcObject=myStream }
       })
     }
 
@@ -147,16 +160,17 @@ reload = function() {
   window.location.href = "http://localhost:3000/";
 }
 
-console.log("call location in iconlist",window.location)
+//console.log("call location in iconlist",window.location)
+console.log("setmyPeer in iconlist",myPeer, myStream)
 
 
   return(
-    <><Subtitles savedNotes={savedNotes}/>
+    <>
      <div className="box">
-          <button onClick={handleSaveNote} disabled={!note}>
+          {/* <button onClick={handleSaveNote} disabled={!note}>
               Save Note
           </button>
-          <p>{note}</p>
+          <p>{note}</p> */}
           {/* {savedNotes.map(n => (
             <p key={n}>{n}</p>
           ))} */}
@@ -166,8 +180,7 @@ console.log("call location in iconlist",window.location)
       <h3>Room: {room}</h3>
     </div>
     <div className="commandBar">
-      <Stack horizontal tokens={stackTokens}>
-        {isListening ? <span>🎙️</span> : <span>🛑🎙️</span>}
+      <Stack horizontal tokens={stackTokens} wrap={true}>
         <DefaultButton
           toggle
           checked={muted}
@@ -199,6 +212,12 @@ console.log("call location in iconlist",window.location)
           onClick={reload}
           />  
         </Link> 
+        <IconButton 
+          iconProps={cc}
+          title="Subtitle"
+          onClick={toggleSubtitle}
+          style={buttonStyle}
+        />
         <DefaultButton 
           secondaryText="See User List" 
           onClick={toggleHideDialog} 
@@ -220,17 +239,23 @@ console.log("call location in iconlist",window.location)
                   text="Add Participants"
                   iconProps={peopleAdd}
                 />
-                <a href="mailto:?subject=I wanted you to see this site&amp;body=Check out this site http://www.website.com."
+                <IconButton 
+                  iconProps={mailAdd}
+                  href="mailto:?subject=I wanted you to see this site&amp;body=Check out this site http://www.website.com."
+                  target="_blank"
+                  title="Share Mail"
+                />
+                {/* <a href="mailto:?subject=I wanted you to see this site&amp;body=Check out this site http://www.website.com."
                   title="Share by Email"
                   target="_blank"
                   rel="noopener noreferrer">
                   <img src="http://png-2.findicons.com/files/icons/573/must_have/48/mail.png"/>
-                </a>
+                </a> */}
                 <a href="https://mail.google.com/mail/u/0/?fs=1&su=Join+Sassycode's+Team+meeting&body=User+is+inviting+you+to+a+meeting.%0A%0AJoin+the+meeting:%0Ahttp://localhost:3000/%0A%0AJoin+Room:+_roomname_&tf=cm"
                   title="Share by Gmail"
                   target="_blank"
                   rel="noopener noreferrer">
-                  <img src="http://png-2.findicons.com/files/icons/573/must_have/48/mail.png"/>
+                  <img src="https://img.icons8.com/ios/20/000000/google-logo--v1.png"/>
                 </a>
               </Stack>
             </DialogFooter>

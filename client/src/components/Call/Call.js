@@ -20,7 +20,7 @@ import Subtitles from '../Subtitles/Subtitles';
 import './Call.css';
 // client-side
 const io = require("socket.io-client");
-const ENDPOINT = 'http://localhost:5001'
+const ENDPOINT = 'http://localhost:5000'
 //const stackTokens: IStackTokens = { childrenGap: 20 };
 
 let socket;
@@ -34,6 +34,14 @@ const Container = styled.div`
     justifyContent: center;
     background-color: #2dbd6e;
 `;
+const itemStyles: React.CSSProperties = {
+  alignItems: 'center',
+  background: '#2dbd6e',
+  display: 'flex',
+  height: 50,
+  justifyContent: 'center',
+  width: 50,
+};
 
 const StyledVideo = styled.video`
     height: 40%;
@@ -64,11 +72,11 @@ const Call = ( {location}) => {
   const userVideo = useRef();
   const peersRef = useRef([]); //related to ui and visuals
   const [callEnded, setCallEnded] = useState(false);
-  let myPeer;
-  let creatingID;
-  const trialApnavideo = document.createElement('video');
+  //let myPeer;
   const [subUser, setSubUser] = useState('');
   const [subText, setSubText] = useState('');
+  const [showSubtitle, setShowSubtitle] = useState(false);
+  const [myPeer, setmyPeer] = useState(null);
   
   useEffect( () => {
     const { name, room } = queryString.parse(location.search);
@@ -269,30 +277,33 @@ const Call = ( {location}) => {
   console.log("result wout duplicate", peerList_duplicateLess);
   //console.log("location",location)
   console.log("sub  sent",sub)
-
+  console.log("showSubtitle",showSubtitle)
+  console.log("mypeer",myPeer)
  //console.log("myownSTream",myStream);
   return (
     <div>
     <Stack Vertical>
       <Stack horizontal>
       <Stack vertical>
-        <IconList room={roomname} media={myStream} peer={myPeer} users={usersInRoom}  sub={sub} sendSub={sendTranscript}/> 
+        <IconList room={roomname} media={myStream} myPeer={myPeer} users={usersInRoom}  sub={sub} sendSub={sendTranscript} setShowSubtitle={setShowSubtitle} showSubtitle={showSubtitle} myStream={myStream}/> 
         <div className="videoGrid">
         {/* <Container> */}
         {/* <Stack horizontal> */}
-        <Stack
+        <Stack className="videoStack"
           horizontal
           wrap={true}
           disableShrink={false}
           horizontalAlign="center"
           verticalAlign="center"
           tokens={stackTokens} 
+          overflow= 'auto'
+          grow={true}
         >
             {/* <StyledVideo id="myVideo" muted ref={userVideo} autoPlay playsInline /> */}
             {peerList_duplicateLess.map((peer, id) => {
                 console.log("passed video peer",peer)
                 return (                    
-                    <Video key={peer.peerID} peer={peer.peer} videoId={peer.peerID} normalRef={myStream} users={usersInRoom} />
+                    <Video key={peer.peerID} peer={peer.peer} videoId={peer.peerID} normalRef={myStream} users={usersInRoom} setmyPeer={setmyPeer}/>
                 );
             })}
             </Stack>
@@ -308,7 +319,7 @@ const Call = ( {location}) => {
       </div>
       </Stack>
       
-      <Subtitles subUser={subUser} subText={subText}/>
+      {showSubtitle && (<Subtitles subUser={subUser} subText={subText}/>)}
       </Stack>
     
     </div>

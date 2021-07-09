@@ -4,7 +4,7 @@
   justify-content: space-between;
   background: #2979FF;
   border-radius: 4px 4px 0 0;
-  height: 60px;
+  height: auto;
   width: 80vw;
 }
 
@@ -12,13 +12,19 @@
   flex: 0.5;
   display: flex;
   align-items: center;
-  margin-left: 5%;
+  margin-left: 2vw;
   color: white;
+  background-color: coral;
+  min-width:max-content;
 }
 
 .commandBar {
   display: flex;
-  flex: 0.5;
+  flex: auto;
   justify-content: flex-end;
-  margin-right: 5%;
+  flex-wrap: wrap;
+  margin-right: 2vw;
+  background-color: darkblue;
+  margin-top: 1vh;
+  width: 100%;
 }

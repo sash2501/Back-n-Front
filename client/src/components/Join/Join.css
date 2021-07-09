@@ -1,5 +1,6 @@
 html, body {
   font-family: 'Roboto', sans-serif;
+  color: rgb(0, 0, 0);
   padding: 0;
   margin: 0;
   height: 100%;
@@ -26,7 +27,7 @@ html, body {
   align-items: center;
   vertical-align: top;
   align-self: center;
-  background-color: blue;
+  /* background-color: blue; */
   width: 50%;
   margin-left: 25%;
 }
@@ -34,7 +35,7 @@ html, body {
 .previewVideo {
   display: flex;
   width: 50%;
-  background-color: #eeff00;
+  background-color: #a1ebfdb2;
   padding: 10px;
   border-radius: 30px;
   vertical-align:top;  
@@ -51,11 +52,11 @@ video {
 }
 .InnerContainer {
   width: 50%;
-  background-color: #acacac;
+  background-color: #ffffffb0;
   padding: 15px 20px;
   border-radius: 30px;
   vertical-align:top;
-  background-image: url('https://image.freepik.com/free-photo/minimalist-monochromatic-blue-wallpaper_23-2148667754.jpg');
+  /* background-image: url('https://image.freepik.com/free-photo/minimalist-monochromatic-blue-wallpaper_23-2148667754.jpg'); */
   background-size: cover;
 }
 

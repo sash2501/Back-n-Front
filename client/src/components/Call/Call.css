@@ -13,11 +13,13 @@
   flex-direction: column;
   justify-content: space-between;
   background: #abe40f;
-  border-radius: 8px;
+  border-radius: 10px;
   height: 100%;
+  min-height: 90vh;
   width: 18vw;
   float: right;
   border-color: black;
+  box-shadow: -4px 10px 35px -1px rgba(0, 0, 0, 0.75);
 }
 
 video {
@@ -28,12 +30,6 @@ video {
   transform: rotateY(180deg);
 }
 
-#video-grid{
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
 /* .box {
   
   min-height: 20rem;
@@ -41,7 +37,7 @@ video {
   padding: 20px;
   border-radius: 5px;
 } */
-.box {
+/* .box {
   display: flex;
   box-shadow: -4px 10px 35px -1px rgba(0, 0, 0, 0.75);
   flex-direction: column;
@@ -52,4 +48,21 @@ video {
   width: 18vw;
   float: left;
   border-color: black;
+} */
+.videoGrid {
+    display: flex;
+    height: 100%;
+    width: 80vw;
+    margin: auto;
+    flex-wrap: wrap;
+    justify-content: center;
+    background-color: #ff00f2;
+}
+
+.videoStack {
+  display: flex;
+  flex-wrap: wrap;
+  background-color: brown;
+  height: auto;
+  min-width: 60vw;
 }

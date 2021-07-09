@@ -47,7 +47,7 @@ const Join = () => {
   return (    
     <div className="wholePage"
     style={{ 
-      backgroundImage: `url("https://image.freepik.com/free-vector/elegant-navy-blue-alcohol-ink-background-with-flowers_41066-1470.jpg")`,
+      backgroundImage: `url("https://images.unsplash.com/photo-1516563670759-299070f0dc54?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1050&q=80")`,
       backgroundRepeat: 'no-repeat',
       width: '100vw',
       height: '100vh',
