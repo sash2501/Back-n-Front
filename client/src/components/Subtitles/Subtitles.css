@@ -6,7 +6,7 @@
   background: #9900ff;
   border-radius: 8px;
   height: auto;
-  width: 80%;
+  width: calc(100% -18vw);
   border-color: black;
   color: black;
   padding-left: 20px;

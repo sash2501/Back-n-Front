@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { IIconProps, initializeIcons } from '@fluentui/react';
+import { IIconProps, initializeIcons, IContextualMenuProps } from '@fluentui/react';
 import { Stack, IStackTokens} from '@fluentui/react/lib/Stack';
-import { IconButton, PrimaryButton, DefaultButton }  from '@fluentui/react/lib/Button';
+import { IconButton, PrimaryButton, DefaultButton, CommandButton, IButtonStyles }  from '@fluentui/react/lib/Button';
 import { Link } from "react-router-dom";
 import { Panel } from '@fluentui/react/lib/Panel';
 import { Dialog, DialogType, DialogFooter } from '@fluentui/react/lib/Dialog';
 
-import { useBoolean } from '@fluentui/react-hooks';
+import { useBoolean, useId } from '@fluentui/react-hooks';
 
 // import onlineIcon from '../../icons/onlineIcon.png';
 // import closeIcon from '../../icons/closeIcon.png';
@@ -26,7 +26,8 @@ const screenCast: IIconProps = { iconName: 'ScreenCast' };
 const people: IIconProps = { iconName: 'People' };
 const peopleAdd: IIconProps = { iconName: 'PeopleAdd' };
 const mailAdd: IIconProps = { iconName: 'NewMail' };
-const cc: IIconProps = { iconName: 'CCSolid' };
+const cc: IIconProps = { iconName: 'OfficeChat' };
+const cancelIcon: IIconProps = { iconName: 'Cancel' };
 
 const modelProps = {
   isBlocking: false,
@@ -50,14 +51,34 @@ mic.lang = 'en-US'
 
 const InfoBar = ({ room, media, myPeer, users, sub, setSub, sendSub, setShowSubtitle, showSubtitle, myStream}) => {
 
+  const menuProps: IContextualMenuProps = {
+    items: [
+      {
+        key: 'emailMessage',
+        text: 'Email message',
+        iconProps: { iconName: 'NewMail' },
+        href: "mailto:?subject=Join PolyChat Meeting&amp;body=User is inviting you to a meeting. Join the meeting: http://localhost:3000/ Join Room:"+room,
+        target: '_blank'
+      },
+      {
+        key: 'gmailInvite',
+        text: 'Gmail invite',
+        iconProps: { iconName: 'Mail' },
+        href: "https://mail.google.com/mail/u/0/?fs=1&su=Join+Sassycode's+Team+meeting&body=User+is+inviting+you+to+a+meeting.%0A%0AJoin+the+meeting:%0Ahttp://localhost:3000/%0A%0AJoin+Room:"+room+"&tf=cm",
+        target: "_blank"
+      },
+    ],
+  };
+
   //const [muted, { toggle: setMuted }] = useBoolean(false);
   const [muted, setMuted] = useState(false);
   const [cameraOff, setCameraOff] = useState(false);
   const [isOpen, { setTrue: openMessage, setFalse: dismissMessage }] = useBoolean(false);
-  const [hideDialog, { toggle: toggleHideDialog }] = useBoolean(true);
+  const [hideDialog, { toggle: toggleHideDialog }] = useBoolean(true); 
   const [isListening, setIsListening] = useState(true)
   const [note, setNote] = useState(null)
   const [savedNotes, setSavedNotes] = useState([])
+  const titleId = useId('title');
 
   useEffect(() => {
     handleListen()
@@ -131,6 +152,10 @@ const InfoBar = ({ room, media, myPeer, users, sub, setSub, sendSub, setShowSubt
     setShowSubtitle(!showSubtitle)    
         
   }
+
+  const toggleNotes = () => {
+
+  }
   
     const shareScreen =() => {
       navigator.mediaDevices.getDisplayMedia({cursor:true})
@@ -181,19 +206,21 @@ console.log("setmyPeer in iconlist",myPeer, myStream)
     </div>
     <div className="commandBar">
       <Stack horizontal tokens={stackTokens} wrap={true}>
-        <DefaultButton
+        <IconButton
+          className="iconBtn"
           toggle
           checked={muted}
-          text={muted ? 'Mic muted' : 'Mic unmuted'}
+          title={muted ? 'Mic muted' : 'Mic unmuted'}
           iconProps={muted ? micOffIcon : micOnIcon}
           onClick={toggleMicrophone}
           style={buttonStyle}
         />          
        
-        <DefaultButton
+        <IconButton
+          className="iconBtn"
           toggle
           checked={cameraOff}
-          text={cameraOff ? 'Cam Off' : 'Cam On'}
+          title={cameraOff ? 'Cam Off' : 'Cam On'}
           iconProps={cameraOff ? camOffIcon : camOnIcon}
           onClick={toggleCamera}
           style={buttonStyle}
@@ -213,6 +240,7 @@ console.log("setmyPeer in iconlist",myPeer, myStream)
           />  
         </Link> 
         <IconButton 
+          className="iconBtn"
           iconProps={cc}
           title="Subtitle"
           onClick={toggleSubtitle}
@@ -235,28 +263,29 @@ console.log("setmyPeer in iconlist",myPeer, myStream)
             <OnlinePeople users={users}/>
             <DialogFooter>
               <Stack tokens={{childrenGap: 10}} horizontal horizontalAlign='center'>
-                <PrimaryButton 
+                <CommandButton 
                   text="Add Participants"
                   iconProps={peopleAdd}
+                  menuProps={menuProps}
                 />
-                <IconButton 
+                {/* <IconButton 
                   iconProps={mailAdd}
                   href="mailto:?subject=I wanted you to see this site&amp;body=Check out this site http://www.website.com."
                   target="_blank"
                   title="Share Mail"
-                />
+                /> */}
                 {/* <a href="mailto:?subject=I wanted you to see this site&amp;body=Check out this site http://www.website.com."
                   title="Share by Email"
                   target="_blank"
                   rel="noopener noreferrer">
                   <img src="http://png-2.findicons.com/files/icons/573/must_have/48/mail.png"/>
                 </a> */}
-                <a href="https://mail.google.com/mail/u/0/?fs=1&su=Join+Sassycode's+Team+meeting&body=User+is+inviting+you+to+a+meeting.%0A%0AJoin+the+meeting:%0Ahttp://localhost:3000/%0A%0AJoin+Room:+_roomname_&tf=cm"
+                {/* <a href="https://mail.google.com/mail/u/0/?fs=1&su=Join+Sassycode's+Team+meeting&body=User+is+inviting+you+to+a+meeting.%0A%0AJoin+the+meeting:%0Ahttp://localhost:3000/%0A%0AJoin+Room:+_roomname_&tf=cm"
                   title="Share by Gmail"
                   target="_blank"
                   rel="noopener noreferrer">
                   <img src="https://img.icons8.com/ios/20/000000/google-logo--v1.png"/>
-                </a>
+                </a> */}
               </Stack>
             </DialogFooter>
           </Dialog>

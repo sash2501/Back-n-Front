@@ -11,6 +11,10 @@ const VideoCell = styled.video`
     align-items: stretch;
 `;
 
+const stackStyles = {
+    root: { backgroundColor: 'rgba(234, 226, 236, 0.596)', borderRadius: '5px'}
+  };
+
 const Video = (props) => {
     const ref = useRef();
     //console.log("video props",props);
@@ -47,7 +51,7 @@ const Video = (props) => {
 
     return (
         <div className="videoCell">
-        <Stack vertical tokens={{childrenGap: 10}}>
+        <Stack vertical tokens={{childrenGap: 10}} styles={stackStyles}>
             <VideoCell playsInline muted={ismuted} autoPlay ref={ref} />
             <h2><center>{name}</center></h2>
         </Stack>

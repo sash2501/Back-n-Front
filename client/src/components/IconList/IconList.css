@@ -5,14 +5,16 @@
   background: #2979FF;
   border-radius: 4px 4px 0 0;
   height: auto;
-  width: 80vw;
+  width: 100%;
+  min-width: 80vw
 }
 
 .roomNameContainer {
   flex: 0.5;
   display: flex;
   align-items: center;
-  margin-left: 2vw;
+  margin-left: 5px;
+  margin-right: 5px;
   color: white;
   background-color: coral;
   min-width:max-content;
@@ -27,4 +29,9 @@
   background-color: darkblue;
   margin-top: 1vh;
   width: 100%;
+}
+
+.iconBtn {
+  background-color: rgb(255, 255, 255);
+  width: 50px;
 }

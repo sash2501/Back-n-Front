@@ -7,7 +7,6 @@ import { Stack, IStackTokens} from '@fluentui/react/lib/Stack';
 import { DefaultButton } from '@fluentui/react/lib/Button';
 import { TextField } from '@fluentui/react/lib/TextField';
 
-
 import InfoBar from '../Chat/MessageBar/MessageBar';
 import MessageDisplayer from '../Chat/MessageDisplayer/MessageDisplayer';
 import IconList from '../IconList/IconList';
@@ -318,61 +317,51 @@ const Call = ( {location}) => {
  //console.log("myownSTream",myStream);
   return (
     <div>
-    <Stack Vertical>
+    <Stack vertical>
       <Stack horizontal>
-      <Stack vertical>
-        <IconList room={roomname} media={myStream} myPeer={myPeer} users={usersInRoom}  sub={sub} sendSub={sendTranscript} setShowSubtitle={setShowSubtitle} showSubtitle={showSubtitle} myStream={myStream}/> 
-        <div className="videoGrid">
-        {/* <Container> */}
-        {/* <Stack horizontal> */}
-        <Stack className="videoStack"
-          horizontal
-          wrap={true}
-          disableShrink={false}
-          horizontalAlign="center"
-          verticalAlign="center"
-          tokens={stackTokens} 
-          overflow= 'auto'
-          grow={true}
-        >
-            {/* <StyledVideo id="myVideo" muted ref={userVideo} autoPlay playsInline /> */}
-            {peerList_duplicateLess.map((peer, id) => {
-                console.log("passed video peer",peer)
-                return (                    
-                    <Video key={peer.peerID} peer={peer.peer} videoId={peer.peerID} normalRef={myStream} users={usersInRoom} setmyPeer={setmyPeer}/>
-                );
-            })}
-            </Stack>
-        {/* </Container>   */}
+        <Stack vertical>
+          <IconList room={roomname} media={myStream} myPeer={myPeer} users={usersInRoom}  sub={sub} sendSub={sendTranscript} setShowSubtitle={setShowSubtitle} showSubtitle={showSubtitle} myStream={myStream}/> 
+          <Stack horizontal>  
+            <div className="notesContainer">      
+              <h2><center>Meeting Notes</center></h2>
+              <textarea rows="30" id="editor" className="notesArea" placeholder="Type Your Text..."></textarea>   
+            </div>    
+            <div className="videoGrid">
+            {/* <Container> */}
+            {/* <Stack horizontal> */}
+              <Stack className="videoStack"
+                  horizontal
+                  wrap={true}
+                  disableShrink={false}
+                  horizontalAlign="center"
+                  verticalAlign="center"
+                  tokens={stackTokens} 
+                  overflow= 'auto'
+                  grow={true}
+                >
+                    {/* <StyledVideo id="myVideo" muted ref={userVideo} autoPlay playsInline /> */}
+                    {peerList_duplicateLess.map((peer, id) => {
+                        console.log("passed video peer",peer)
+                        return (                    
+                            <Video key={peer.peerID} peer={peer.peer} videoId={peer.peerID} normalRef={myStream} users={usersInRoom} setmyPeer={setmyPeer}/>
+                        );
+                    })}
+                </Stack>
+            {/* </Container>   */}
+            </div>
+          </Stack>
+        </Stack>
+        <div className="messageContainer">
+          <div className="container">
+            <InfoBar />   
+            <MessageDisplayer messages={messageList} name={username} />   
+            <Input message={message} setMessage={setMessage} sendMessage={sendMessage}/>
+          </div>
         </div>
-      </Stack>
-      <div className="messageContainer">
-        <div className="container">
-          <InfoBar />   
-          <MessageDisplayer messages={messageList} name={username} />   
-          <Input message={message} setMessage={setMessage} sendMessage={sendMessage}/>
-        </div>
-      </div>
       </Stack>
       
       {showSubtitle && (<Subtitles subUser={subUser} subText={subText}/>)}
-      <input
-      type="text"
-      placeholder="Notes."
-      value={note}
-      onChange={({ target: { value } }) => {
-        setNote(value)
-        console.log("abhi wala value", value,note)
-        sendNotes(value)
-        }}
-    />
-    <input
-      type="text"
-      placeholder="Test."
-      value={note}
-    />
-    <textarea rows="30" cols="50" id="editor" placeholder="Type Your Text..."></textarea>
-      </Stack>
+    </Stack>
     
     </div>
   )

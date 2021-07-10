@@ -52,7 +52,8 @@ video {
 .videoGrid {
     display: flex;
     height: 100%;
-    width: 80vw;
+    width: 100%;
+    min-height: 80vh;
     margin: auto;
     flex-wrap: wrap;
     justify-content: center;
@@ -65,4 +66,21 @@ video {
   background-color: brown;
   height: auto;
   min-width: 60vw;
+}
+
+.notesContainer {
+  justify-content: space-between;
+  background: #fd8700;
+  border-radius: 10px;
+  height:max-content;
+  float: left;
+  border-color: black;
+  box-shadow: -4px 10px 35px -1px rgba(0, 0, 0, 0.75);
+  margin-left: 1vw;
+  width:max-content;
+}
+
+.notesArea {
+  width: 20vw;
+  margin: 5px;
 }
