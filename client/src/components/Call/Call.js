@@ -25,15 +25,6 @@ const ENDPOINT = 'http://localhost:5000'
 
 let socket;
 
-const Container = styled.div`
-    padding: 20px;
-    display: flex;
-    height: 100%;
-    // margin: auto;
-    flex-wrap: wrap;
-    justifyContent: center;
-    background-color: #2dbd6e;
-`;
 const itemStyles: React.CSSProperties = {
   alignItems: 'center',
   background: '#2dbd6e',
@@ -47,10 +38,8 @@ const StyledVideo = styled.video`
     height: 40%;
     width: 50%;
 `;
-// const videoConstraints = {
-//     height: window.innerHeight / 2,
-//     width: window.innerWidth / 2
-// };
+
+const buttonStyle = { borderRadius: '5px', boxShadow: '-4px 10px 35px -1px rgba(0, 0, 0, 0.75)'}
 
 const stackTokens: IStackTokens = {
     childrenGap: `10 10`, //rowGap + ' ' + columnGap,
@@ -77,9 +66,13 @@ const Call = ( {location}) => {
   const [subText, setSubText] = useState('');
   const [showSubtitle, setShowSubtitle] = useState(false);
   const [note, setNote] = useState('');
+  const [showNote, setShowNote] = useState(false);
   const [myPeer, setmyPeer] = useState(null);
+  const [isRaised, setIsRaised] = useState(true);
+  const [isScreen, setIsScreen] = useState(false);
 
   const editor = document.getElementById("editor")
+  const textAreaRef = useRef(null);
 
   useEffect( () => {
     const { name, room } = queryString.parse(location.search);
@@ -274,27 +267,34 @@ const Call = ( {location}) => {
     }    
   }
 
+  if(editor) {
+    editor.addEventListener("keyup", (evt) => {
+      const text = editor.value
+      console.log("editor txt",text)
+      socket.emit('sendNotes', text ,() => console.log("sending notes to server"));
+    })
+  }
+  if(editor) editor.value = note
+  if(showNote) {
+    document.querySelectorAll(".notesContainer").forEach(a=>a.style.display = "block");
+  } else {
+    document.querySelectorAll(".notesContainer").forEach(a=>a.style.display = "none");
+  }
+
+  function copyToClipboard(e) {
+    textAreaRef.current.select();
+    document.execCommand('copy');
+    // This is just personal preference.
+    // I prefer to not show the whole text area selected.
+    e.target.focus();
+  };
 
   console.log("transcipt passed", sub);
-  // const getUsersList = (event) => {
-  //   event.preventDefualt();
-
-  //   socket.emit('sendUserList', )
-  // }
 
   console.log(message, messageList);
   const peerList_duplicateLess = peersList.filter((v,i) => {
     return peersList.map((peer)=> peer.peerID).indexOf(v.peerID) === i
   })
-
-  // if(peersList.length === 1)  {
-  //   //console.log("length is only 1");
-  //   peersList.map((peer) => {
-  //     myPeer = peer;
-  //   })
-  //   console.log(myPeer.peerID);
-
-  // }
 
   //console.log("peerslist final",peersList);  
   console.log("users in room", usersInRoom);
@@ -305,26 +305,24 @@ const Call = ( {location}) => {
   console.log("mypeer",myPeer)
   console.log("note in end", note)
 
-  console.log("edito",editor)
-  if(editor) {
-    editor.addEventListener("keyup", (evt) => {
-      const text = editor.value
-      console.log("editor txt",text)
-      socket.emit('sendNotes', text ,() => console.log("sending notes to server"));
+  console.log("screen set",isScreen)
 
-  })}
-  if(editor) editor.value = note
- //console.log("myownSTream",myStream);
+
   return (
     <div>
     <Stack vertical>
       <Stack horizontal>
         <Stack vertical>
-          <IconList room={roomname} media={myStream} myPeer={myPeer} users={usersInRoom}  sub={sub} sendSub={sendTranscript} setShowSubtitle={setShowSubtitle} showSubtitle={showSubtitle} myStream={myStream}/> 
+          <IconList user={username} room={roomname} media={myStream} myPeer={myPeer} users={usersInRoom}  sub={sub} sendSub={sendTranscript} setShowSubtitle={setShowSubtitle} showSubtitle={showSubtitle} myStream={myStream} showNote={showNote} setShowNote={setShowNote} setIsScreen={setIsScreen} /> 
           <Stack horizontal>  
             <div className="notesContainer">      
               <h2><center>Meeting Notes</center></h2>
-              <textarea rows="30" id="editor" className="notesArea" placeholder="Type Your Text..."></textarea>   
+              <textarea rows="30" id="editor" className="notesArea" placeholder="Type Your Text..." ref={textAreaRef}></textarea> 
+                <center><DefaultButton 
+                  text="Copy to Clipboard" 
+                  onClick={copyToClipboard} 
+                  iconProps={{ iconName: 'Copy' }}
+                  style={buttonStyle}/></center>
             </div>    
             <div className="videoGrid">
             {/* <Container> */}
@@ -343,7 +341,7 @@ const Call = ( {location}) => {
                     {peerList_duplicateLess.map((peer, id) => {
                         console.log("passed video peer",peer)
                         return (                    
-                            <Video key={peer.peerID} peer={peer.peer} videoId={peer.peerID} normalRef={myStream} users={usersInRoom} setmyPeer={setmyPeer}/>
+                            <Video key={peer.peerID} peer={peer.peer} videoId={peer.peerID} normalRef={myStream} users={usersInRoom} setmyPeer={setmyPeer} isScreen={isScreen} />
                         );
                     })}
                 </Stack>

@@ -15,11 +15,16 @@ const stackStyles = {
     root: { backgroundColor: 'rgba(234, 226, 236, 0.596)', borderRadius: '5px'}
   };
 
+// const stackRaisedStyles = {
+//     root: { backgroundColor: 'yellow', borderRadius: '5px'}
+//   };
+
 const Video = (props) => {
     const ref = useRef();
     //console.log("video props",props);
     const [ismuted, setMuted] = useState(false)
     const [name, setName] = useState('')
+    const myPeer=useRef();
 
     useEffect(() => {
         props.peer.on("stream", stream => {
@@ -29,7 +34,9 @@ const Video = (props) => {
 
             if(stream.id === props.normalRef.id) {
                 setMuted(true);
-                props.setmyPeer(props.peer);
+                myPeer.current=props.peer;
+                //setmyPeer(props.peer);
+                //if(props.isRaised) setRaise(true);
             }
         })
         
@@ -44,14 +51,35 @@ const Video = (props) => {
                     setName(user.name)
                 }      
             })
+        
+        
 
         //console.log("ref video ka",ref);
         //console.log("ref passed wala", props.NormalRef)
     }, []);
+    console.log("mypeer", myPeer)
+
+    // if(props.isScreen && myPeer.current) {
+    //         console.log("in Video, screen is true",myPeer,props.normalRef,ref);
+    //          navigator.mediaDevices.getDisplayMedia({cursor:true})
+    //          .then(screenStream=>{
+    //              console.log("screen sharing");
+    //              myPeer.current.replaceTrack(props.normalRef.getVideoTracks()[0],screenStream.getVideoTracks()[0],props.normalRef)
+    //              ref.current.srcObject=screenStream
+            
+            
+    //         //     screenStream.getTracks()[0].onended = () =>{
+    //         //     console.log("screen ended");
+    //         //     myPeer.current.replaceTrack(screenStream.getVideoTracks()[0],props.normalRef.getVideoTracks()[0],props.normalRef)
+    //         //     ref.current.srcObject=props.normalRef;
+    //         //     }
+    //          })
+    // }
 
     return (
         <div className="videoCell">
-        <Stack vertical tokens={{childrenGap: 10}} styles={stackStyles}>
+        <Stack vertical tokens={{childrenGap: 10}} 
+        styles={stackStyles}>
             <VideoCell playsInline muted={ismuted} autoPlay ref={ref} />
             <h2><center>{name}</center></h2>
         </Stack>

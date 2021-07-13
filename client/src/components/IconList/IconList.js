@@ -26,8 +26,9 @@ const screenCast: IIconProps = { iconName: 'ScreenCast' };
 const people: IIconProps = { iconName: 'People' };
 const peopleAdd: IIconProps = { iconName: 'PeopleAdd' };
 const mailAdd: IIconProps = { iconName: 'NewMail' };
-const cc: IIconProps = { iconName: 'OfficeChat' };
-const cancelIcon: IIconProps = { iconName: 'Cancel' };
+const cc: IIconProps = { iconName: 'TextCallout' };
+const editNote: IIconProps = { iconName: 'EditNote' };
+const raiseHand: IIconProps = { iconName: 'HandsFree' };
 
 const modelProps = {
   isBlocking: false,
@@ -49,7 +50,7 @@ mic.continuous = true
 mic.interimResults = true
 mic.lang = 'en-US'
 
-const InfoBar = ({ room, media, myPeer, users, sub, setSub, sendSub, setShowSubtitle, showSubtitle, myStream}) => {
+const InfoBar = ({ user, room, media, myPeer, users, sub, setSub, sendSub, setShowSubtitle, showSubtitle, myStream, showNote, setShowNote, setIsScreen}) => {
 
   const menuProps: IContextualMenuProps = {
     items: [
@@ -57,14 +58,14 @@ const InfoBar = ({ room, media, myPeer, users, sub, setSub, sendSub, setShowSubt
         key: 'emailMessage',
         text: 'Email message',
         iconProps: { iconName: 'NewMail' },
-        href: "mailto:?subject=Join PolyChat Meeting&amp;body=User is inviting you to a meeting. Join the meeting: http://localhost:3000/ Join Room:"+room,
+        href: "mailto:?subject=Join PolyChat Meeting&amp;body="+user+" is inviting you to a meeting. Join the meeting: http://localhost:3000/ Join the Room: "+room,
         target: '_blank'
       },
       {
         key: 'gmailInvite',
         text: 'Gmail invite',
         iconProps: { iconName: 'Mail' },
-        href: "https://mail.google.com/mail/u/0/?fs=1&su=Join+Sassycode's+Team+meeting&body=User+is+inviting+you+to+a+meeting.%0A%0AJoin+the+meeting:%0Ahttp://localhost:3000/%0A%0AJoin+Room:"+room+"&tf=cm",
+        href: "https://mail.google.com/mail/u/0/?fs=1&su=Join+Sassycode's+Team+meeting&body="+user+"+is+inviting+you+to+a+meeting.%0A%0AJoin+the+meeting:%0Ahttp://localhost:3000/%0A%0AJoin+Room:"+room+"&tf=cm",
         target: "_blank"
       },
     ],
@@ -154,27 +155,16 @@ const InfoBar = ({ room, media, myPeer, users, sub, setSub, sendSub, setShowSubt
   }
 
   const toggleNotes = () => {
+    console.log("toggleNotes",showNote)
+    setShowNote(!showNote)
+  }
 
+  const toggleSceen = () => {
+    console.log("setting screen");
+    setIsScreen(true);
   }
   
-    const shareScreen =() => {
-      navigator.mediaDevices.getDisplayMedia({cursor:true})
-      .then(screenStream=>{
-        console.log("screen sharing");
-        // myPeer.replaceTrack(media.getVideoTracks()[0],screenStream.getVideoTracks()[0],media)
-        // userVideo.current.srcObject=screenStream
-        // screenStream.getTracks()[0].onended = () =>{
-        // myPeer.replaceTrack(screenStream.getVideoTracks()[0],stream.getVideoTracks()[0],media)
-        // userVideo.current.srcObject=media
-        //}
-        myPeer.replaceTrack(myStream.getVideoTracks()[0],screenStream.getVideoTracks()[0],myStream)
-        //userVideo.current.srcObject=screenStream
-
-        // screenStream.getTracks()[0].onended = () =>{
-        //   myPeer.current.replaceTrack(screenStream.getVideoTracks()[0],myStream.getVideoTracks()[0],myStream)
-        //   userVideo.current.srcObject=myStream }
-      })
-    }
+    
 
     function reload() {
       console.log("reloading")
@@ -225,12 +215,12 @@ console.log("setmyPeer in iconlist",myPeer, myStream)
           onClick={toggleCamera}
           style={buttonStyle}
         />  
-        <DefaultButton 
+        {/* <DefaultButton 
           text="Screen" 
-          onClick={shareScreen} 
+          onClick={toggleSceen} 
           iconProps={screenCast}
           style={buttonStyle}
-        />
+        /> */}
         <Link to={`/`}>
           <DefaultButton 
           text="End Call" 
@@ -246,6 +236,20 @@ console.log("setmyPeer in iconlist",myPeer, myStream)
           onClick={toggleSubtitle}
           style={buttonStyle}
         />
+        <IconButton 
+          id="noteBtn"
+          className="iconBtn"
+          iconProps={editNote}
+          title="Notes"
+          onClick={toggleNotes}
+          style={buttonStyle}
+        />
+        {/* <IconButton 
+          className="iconBtn"
+          iconProps={raiseHand}
+          title="Hands"
+          style={buttonStyle}
+        /> */}
         <DefaultButton 
           secondaryText="See User List" 
           onClick={toggleHideDialog} 
